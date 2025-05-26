@@ -1,0 +1,48 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Output of go build
+/build/
+*.out
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Dependency directories (if using vendoring)
+vendor/
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Git-ignored Go modules cache (optional)
+.gomodcache/
+
+# Air temp files
+.tmp/
+.air/
+.air.*.pid
+
+# dotenv and local config (if any)
+.env
+.env.*
+!.env.dist
+
+# Test coverage and profiling
+*.cover
+*.cov
+*.prof
