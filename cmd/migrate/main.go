@@ -25,6 +25,8 @@ func main() {
 			log.Fatal("Please provide a migration name: create <name>")
 		}
 		migrate.CreateMigration(os.Args[2])
+	case "seed":
+		migrate.Seed()
 	default:
 		log.Fatalf("Unknown command: %s", command)
 	}
