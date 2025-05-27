@@ -11,18 +11,18 @@ import (
 
 type SeatsModule struct {
 	repo     repository.SeatsRepository
-	Ohs      *ohs.SeatsOHS
+	Api      *ohs.SeatsOHS
 	Handlers *handlers.SeatHandlers
 }
 
 func NewSeatsModule(db *sql.DB) *SeatsModule {
 	repo := database.NewPostgresSeatsRepository(db)
-	ohs := ohs.NewSeatsOHS(repo)
+	Api := ohs.NewSeatsOHS(repo)
 	handlers := handlers.NewSeatHandlers(repo)
 
 	return &SeatsModule{
 		repo,
-		ohs,
+		Api,
 		handlers,
 	}
 }
