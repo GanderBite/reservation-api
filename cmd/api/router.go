@@ -16,6 +16,8 @@ func (app *application) routes() http.Handler {
 		})
 
 		v1.POST("/seats", app.seats.Handlers.CreateSeatHandler.Handle)
+		v1.GET("/seats", app.seats.Handlers.GetAllSeats)
 	}
+
 	return g
 }

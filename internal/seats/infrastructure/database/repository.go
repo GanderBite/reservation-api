@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"errors"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/seats/model/dtos"
@@ -42,5 +41,34 @@ func (repo *PostgresSeatsRepository) Insert(dto *dtos.CreateSeatDto) (types.Id, 
 }
 
 func (repo *PostgresSeatsRepository) GetAll() ([]*entities.Seat, error) {
-	return []*entities.Seat{}, errors.New("Not implemented!")
+	query := `SELECT id, row, col, price FROM seats`
+
+	rows, err := repo.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var seats []*entities.Seat
+
+	for rows.Next() {
+		var id uuid.UUID
+		var row string
+		var col int
+		var price types.Price
+
+		err := rows.Scan(&id, &row, &col, &price)
+		if err != nil {
+			return nil, err
+		}
+
+		seat := entities.NewSeat(id, row, col, price)
+		seats = append(seats, seat)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return seats, nil
 }
