@@ -1,0 +1,19 @@
+services:
+  reservation-postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: reservationsDb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - reservation-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+
+volumes:
+  reservation-postgres-data:
