@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
-	"github.com/GanderBite/reservation-api/internal/seats/model/dtos"
 	"github.com/GanderBite/reservation-api/internal/seats/model/entities"
 	"github.com/google/uuid"
 )
@@ -19,7 +18,7 @@ func NewPostgresSeatsRepository(db *sql.DB) *PostgresSeatsRepository {
 	}
 }
 
-func (repo *PostgresSeatsRepository) Insert(dto *dtos.CreateSeatDto) (types.Id, error) {
+func (repo *PostgresSeatsRepository) Insert(seat *entities.Seat) (types.Id, error) {
 	query := `INSERT INTO seats
 		(row, col, price)
 	VALUES
@@ -27,7 +26,7 @@ func (repo *PostgresSeatsRepository) Insert(dto *dtos.CreateSeatDto) (types.Id, 
 	RETURNING id`
 
 	var createdSeatId string
-	err := repo.db.QueryRow(query, dto.Row, dto.Col, dto.Price).Scan(&createdSeatId)
+	err := repo.db.QueryRow(query, seat.Row, seat.Col, seat.Price).Scan(&createdSeatId)
 	if err != nil {
 		return uuid.Nil, err
 	}

@@ -13,9 +13,17 @@ type Seat struct {
 
 func NewSeat(id types.Id, row string, col int, price types.Price) *Seat {
 	return &Seat{
-		id,
-		row,
-		col,
-		price,
+		ID:    id,
+		Row:   row,
+		Col:   col,
+		Price: price,
+	}
+}
+
+func NewSeatFromDto(row string, col int, price float64) *Seat {
+	return &Seat{
+		Row:   row,
+		Col:   col,
+		Price: types.Price(price),
 	}
 }

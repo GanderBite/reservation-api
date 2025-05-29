@@ -6,12 +6,13 @@ import (
 	"github.com/GanderBite/reservation-api/internal/seats/infrastructure/database"
 	"github.com/GanderBite/reservation-api/internal/seats/infrastructure/handlers"
 	"github.com/GanderBite/reservation-api/internal/seats/infrastructure/ohs"
+	ohsModel "github.com/GanderBite/reservation-api/internal/seats/model/ohs"
 	"github.com/GanderBite/reservation-api/internal/seats/model/repository"
 )
 
 type SeatsModule struct {
 	repo     repository.SeatsRepository
-	Api      *ohs.SeatsOHS
+	Api      ohsModel.SeatsOHS
 	Handlers *handlers.SeatHandlers
 }
 
