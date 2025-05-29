@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
@@ -18,7 +19,7 @@ func NewPostgresSeatsRepository(db *sql.DB) *PostgresSeatsRepository {
 	}
 }
 
-func (repo *PostgresSeatsRepository) Insert(seat *entities.Seat) (types.Id, error) {
+func (repo *PostgresSeatsRepository) Insert(ctx context.Context, seat *entities.Seat) (types.Id, error) {
 	query := `INSERT INTO seats
 		(row, col, price)
 	VALUES
@@ -26,7 +27,7 @@ func (repo *PostgresSeatsRepository) Insert(seat *entities.Seat) (types.Id, erro
 	RETURNING id`
 
 	var createdSeatId string
-	err := repo.db.QueryRow(query, seat.Row, seat.Col, seat.Price).Scan(&createdSeatId)
+	err := repo.db.QueryRowContext(ctx, query, seat.Row, seat.Col, seat.Price).Scan(&createdSeatId)
 	if err != nil {
 		return uuid.Nil, err
 	}
@@ -39,10 +40,10 @@ func (repo *PostgresSeatsRepository) Insert(seat *entities.Seat) (types.Id, erro
 	return parsedId, nil
 }
 
-func (repo *PostgresSeatsRepository) GetAll() ([]*entities.Seat, error) {
+func (repo *PostgresSeatsRepository) GetAll(ctx context.Context) ([]*entities.Seat, error) {
 	query := `SELECT id, row, col, price FROM seats`
 
-	rows, err := repo.db.Query(query)
+	rows, err := repo.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

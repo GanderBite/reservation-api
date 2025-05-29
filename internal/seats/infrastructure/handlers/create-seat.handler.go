@@ -27,7 +27,7 @@ func (h *createSeatHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	seatId, err := h.createSeatUC.Execute(&dto)
+	seatId, err := h.createSeatUC.Execute(c.Request.Context(), &dto)
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, err.Error())
 		return

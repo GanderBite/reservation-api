@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"context"
+
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/seats/model/dtos"
 	"github.com/GanderBite/reservation-api/internal/seats/model/entities"
@@ -17,9 +19,9 @@ func NewCreateSeatUseCase(seatsRepository repository.SeatsRepository) *CreateSea
 	}
 }
 
-func (uc *CreateSeatUseCase) Execute(dto *dtos.CreateSeatDto) (types.Id, error) {
+func (uc *CreateSeatUseCase) Execute(ctx context.Context, dto *dtos.CreateSeatDto) (types.Id, error) {
 	seat := entities.NewSeatFromDto(dto.Row, dto.Col, dto.Price)
-	seatId, err := uc.seatsRepository.Insert(seat)
+	seatId, err := uc.seatsRepository.Insert(ctx, seat)
 	if err != nil {
 		return types.Id{}, err
 	}

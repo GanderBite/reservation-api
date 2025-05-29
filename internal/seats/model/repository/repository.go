@@ -1,11 +1,13 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/seats/model/entities"
 )
 
 type SeatsRepository interface {
-	Insert(seat *entities.Seat) (types.Id, error)
-	GetAll() ([]*entities.Seat, error)
+	Insert(ctx context.Context, seat *entities.Seat) (types.Id, error)
+	GetAll(ctx context.Context) ([]*entities.Seat, error)
 }

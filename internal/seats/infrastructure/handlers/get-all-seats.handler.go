@@ -8,7 +8,7 @@ import (
 )
 
 func (h *SeatHandlers) GetAllSeats(c *gin.Context) {
-	seats, err := h.repo.GetAll()
+	seats, err := h.repo.GetAll(c.Request.Context())
 	if err != nil {
 		response.Error(c, http.StatusInternalServerError, err.Error())
 		return
