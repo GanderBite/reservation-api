@@ -36,6 +36,19 @@ func NewReservation(
 	}
 }
 
+func NewReservationFromDto(
+	price types.Price,
+) *Reservation {
+	createdAt := time.Now()
+	expiresAt := createdAt.Add(1 * time.Hour)
+	return &Reservation{
+		Status:    StatusPending,
+		Price:     price,
+		CreatedAt: createdAt,
+		ExpiresAt: expiresAt,
+	}
+}
+
 func (r *Reservation) ApplyDiscount(appliedDiscountId types.Id, amount types.Price) {
 	r.AppliedDiscountCodeId = &appliedDiscountId
 	r.Price -= amount
@@ -56,17 +69,4 @@ func (r *Reservation) UpdateStatus(status ReservationStatus) error {
 	}
 
 	return nil
-}
-
-func NewReservationFromDto(
-	price types.Price,
-) *Reservation {
-	createdAt := time.Now()
-	expiresAt := createdAt.Add(1 * time.Hour)
-	return &Reservation{
-		Status:    StatusPending,
-		Price:     price,
-		CreatedAt: createdAt,
-		ExpiresAt: expiresAt,
-	}
 }
