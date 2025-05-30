@@ -15,8 +15,9 @@ func (app *application) routes() http.Handler {
 			c.JSON(http.StatusOK, gin.H{"status": "healthy"})
 		})
 
+		v1.POST("/reservations", app.reservations.Handlers.CreateReservationHandler.Handle)
+
 		v1.POST("/seats", app.seats.Handlers.CreateSeatHandler.Handle)
-		v1.GET("/seats", app.seats.Handlers.GetAllSeats)
 	}
 
 	return g

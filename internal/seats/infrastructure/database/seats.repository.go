@@ -3,6 +3,8 @@ package database
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strings"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/seats/model/entities"
@@ -40,25 +42,37 @@ func (repo *PostgresSeatsRepository) Insert(ctx context.Context, seat *entities.
 	return parsedId, nil
 }
 
-func (repo *PostgresSeatsRepository) GetAll(ctx context.Context) ([]*entities.Seat, error) {
-	query := `SELECT id, row, col, price FROM seats`
+func (repo *PostgresSeatsRepository) GetByIds(ctx context.Context, ids []*types.Id) ([]*entities.Seat, error) {
+	if len(ids) == 0 {
+		return []*entities.Seat{}, nil
+	}
 
-	rows, err := repo.db.QueryContext(ctx, query)
+	placeholders := make([]string, len(ids))
+	args := make([]any, len(ids))
+	for i, id := range ids {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+
+	query := fmt.Sprintf(`
+		SELECT id, row, col, price
+		FROM seats
+		WHERE id IN (%s)`, strings.Join(placeholders, ", "))
+
+	rows, err := repo.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var seats []*entities.Seat
-
 	for rows.Next() {
 		var id uuid.UUID
 		var row string
 		var col int
 		var price types.Price
 
-		err := rows.Scan(&id, &row, &col, &price)
-		if err != nil {
+		if err := rows.Scan(&id, &row, &col, &price); err != nil {
 			return nil, err
 		}
 
@@ -66,7 +80,7 @@ func (repo *PostgresSeatsRepository) GetAll(ctx context.Context) ([]*entities.Se
 		seats = append(seats, seat)
 	}
 
-	if err = rows.Err(); err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 

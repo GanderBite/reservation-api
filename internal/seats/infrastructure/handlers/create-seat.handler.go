@@ -29,6 +29,7 @@ func (h *createSeatHandler) Handle(c *gin.Context) {
 
 	seatId, err := h.createSeatUC.Execute(c.Request.Context(), &dto)
 	if err != nil {
+		// TODO: handle seats already reserved error
 		response.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
