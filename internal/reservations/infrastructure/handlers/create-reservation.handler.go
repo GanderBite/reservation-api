@@ -35,9 +35,10 @@ func (h *createReservationHandler) Handle(c *gin.Context) {
 			response.Error(c, http.StatusConflict, err.Error())
 		} else if errors.Is(domain.ErrMissingSeats, err) {
 			response.Error(c, http.StatusBadRequest, err.Error())
+		} else {
+			response.Error(c, http.StatusInternalServerError, err.Error())
 		}
 
-		response.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 

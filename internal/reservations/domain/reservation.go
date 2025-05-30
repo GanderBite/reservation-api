@@ -41,6 +41,23 @@ func (r *Reservation) ApplyDiscount(appliedDiscountId types.Id, amount types.Pri
 	r.Price -= amount
 }
 
+func (r *Reservation) UpdateStatus(status ReservationStatus) error {
+	if r.Status == StatusPending {
+		r.Status = status
+		return nil
+	}
+
+	if r.Status == status {
+		return ErrReservationStatusAlreadyApplied
+	}
+
+	if r.Status == StatusExpired {
+		return ErrReservationAlreadyExpired
+	}
+
+	return nil
+}
+
 func NewReservationFromDto(
 	price types.Price,
 ) *Reservation {

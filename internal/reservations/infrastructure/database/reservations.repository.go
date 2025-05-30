@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -111,6 +112,58 @@ func (repo *PostgresReservationsRepository) GetReservedSeatsByIds(ctx context.Co
 	return rsArr, nil
 }
 
-func (repo *PostgresReservationsRepository) GetById(ctx context.Context, id types.Id) *domain.Reservation {
-	return nil
+func (repo *PostgresReservationsRepository) GetById(ctx context.Context, id types.Id) (*domain.Reservation, error) {
+	query := `
+		SELECT id, status, price, created_at, applied_discount_code_id
+		FROM reservations
+		WHERE id = $1
+	`
+
+	var (
+		reservationId         uuid.UUID
+		status                domain.ReservationStatus
+		price                 types.Price
+		createdAt             time.Time
+		appliedDiscountCodeId *uuid.UUID
+	)
+
+	err := repo.db.QueryRowContext(ctx, query, id).Scan(
+		&reservationId,
+		&status,
+		&price,
+		&createdAt,
+		&appliedDiscountCodeId,
+	)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	res := &domain.Reservation{
+		ID:                    types.Id(reservationId),
+		Status:                status,
+		Price:                 price,
+		CreatedAt:             createdAt,
+		AppliedDiscountCodeId: nil,
+	}
+
+	if appliedDiscountCodeId != nil {
+		id := types.Id(*appliedDiscountCodeId)
+		res.AppliedDiscountCodeId = &id
+	}
+
+	return res, nil
+}
+
+func (repo *PostgresReservationsRepository) UpdateStatus(ctx context.Context, reservationId types.Id, status domain.ReservationStatus) error {
+	query := `
+			UPDATE reservations
+			SET status = $1
+			WHERE id = $2
+		`
+	_, err := repo.db.ExecContext(ctx, query, status, reservationId)
+
+	return err
 }

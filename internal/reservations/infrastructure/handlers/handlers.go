@@ -9,8 +9,10 @@ import (
 )
 
 type ReservationHandlers struct {
-	repo                     reservation.ReservationsRepository
-	CreateReservationHandler *createReservationHandler
+	repo                      reservation.ReservationsRepository
+	CreateReservationHandler  *createReservationHandler
+	ConfirmReservationHandler *confirmReservationHandler
+	CancelReservationHandler  *cancelReservationHandler
 }
 
 func NewReservationHandlers(
@@ -24,10 +26,16 @@ func NewReservationHandlers(
 		discountCodesApi,
 		services.NewApplyDiscountService(),
 	)
+	updateReservationStatusUseCase := usecases.NewUpdateReservationStatusUseCase(reservationRepository)
+
 	createReservationHandler := newCreateReservationHandler(createReservationUC)
+	confirmReservationHandler := newConfirmReservationHandler(updateReservationStatusUseCase)
+	cancelReservationHandler := newCancelReservationHandler(updateReservationStatusUseCase)
 
 	return &ReservationHandlers{
-		repo:                     reservationRepository,
-		CreateReservationHandler: createReservationHandler,
+		repo:                      reservationRepository,
+		CreateReservationHandler:  createReservationHandler,
+		ConfirmReservationHandler: confirmReservationHandler,
+		CancelReservationHandler:  cancelReservationHandler,
 	}
 }

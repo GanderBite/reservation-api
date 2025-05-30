@@ -23,6 +23,8 @@ func (app *application) routes() http.Handler {
 
 		// Reservations
 		v1.POST("/reservations", app.reservations.Handlers.CreateReservationHandler.Handle)
+		v1.POST("/reservations/confirm", app.reservations.Handlers.ConfirmReservationHandler.Handle)
+		v1.POST("/reservations/cancel", app.reservations.Handlers.CancelReservationHandler.Handle)
 
 	}
 
