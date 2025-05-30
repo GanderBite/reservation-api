@@ -8,10 +8,11 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func RunMigrations(direction string) {
-	db, err := sql.Open("postgres", env.GetEnvString("DATABASE_URL"))
+	db, err := sql.Open("pgx", env.GetEnvString("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}

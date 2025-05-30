@@ -23,13 +23,12 @@ func (h *createSeatHandler) Handle(c *gin.Context) {
 	var dto dtos.CreateSeatDto
 
 	if err := c.ShouldBindJSON(&dto); err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid payload")
+		response.Error(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	seatId, err := h.createSeatUC.Execute(c.Request.Context(), &dto)
 	if err != nil {
-		// TODO: handle seats already reserved error
 		response.Error(c, http.StatusInternalServerError, err.Error())
 		return
 	}

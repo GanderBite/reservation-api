@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 
+	discount_code "github.com/GanderBite/reservation-api/internal/discount-codes"
 	"github.com/GanderBite/reservation-api/internal/pkg/env"
 	"github.com/GanderBite/reservation-api/internal/reservations"
 	"github.com/GanderBite/reservation-api/internal/seats"
@@ -11,9 +12,10 @@ import (
 )
 
 type application struct {
-	port         int
-	seats        *seats.SeatsModule
-	reservations *reservations.ReservationsModule
+	port          int
+	seats         *seats.SeatsModule
+	reservations  *reservations.ReservationsModule
+	discountCodes *discount_code.DiscountCodesModule
 }
 
 func main() {
@@ -27,11 +29,13 @@ func main() {
 
 	seats := seats.NewSeatsModule(db)
 	reservations := reservations.NewReservationsModule(db, seats.Api)
+	discountCodes := discount_code.NewDiscountModule(db)
 
 	app := &application{
-		port:         env.GetEnvInt("PORT"),
-		seats:        seats,
-		reservations: reservations,
+		port:          env.GetEnvInt("PORT"),
+		seats:         seats,
+		reservations:  reservations,
+		discountCodes: discountCodes,
 	}
 
 	err = app.serve()
