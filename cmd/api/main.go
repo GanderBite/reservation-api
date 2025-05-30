@@ -28,8 +28,8 @@ func main() {
 	}
 
 	seats := seats.NewSeatsModule(db)
-	reservations := reservations.NewReservationsModule(db, seats.Api)
 	discountCodes := discount_code.NewDiscountModule(db)
+	reservations := reservations.NewReservationsModule(db, seats.Api, discountCodes.Api)
 
 	app := &application{
 		port:          env.GetEnvInt("PORT"),

@@ -7,12 +7,13 @@ import (
 )
 
 type Reservation struct {
-	ID        types.Id
-	Status    ReservationStatus
-	Price     types.Price
-	CreatedAt time.Time
-	ExpiresAt time.Time
-	UpdatedAt time.Time
+	ID                    types.Id
+	Status                ReservationStatus
+	Price                 types.Price
+	CreatedAt             time.Time
+	ExpiresAt             time.Time
+	UpdatedAt             time.Time
+	AppliedDiscountCodeId *types.Id
 }
 
 func NewReservation(
@@ -22,6 +23,7 @@ func NewReservation(
 	createdAt time.Time,
 	expiresAt time.Time,
 	updatedAt time.Time,
+	appliedDiscountCodeId *types.Id,
 ) *Reservation {
 	return &Reservation{
 		Id,
@@ -30,7 +32,13 @@ func NewReservation(
 		createdAt,
 		expiresAt,
 		updatedAt,
+		appliedDiscountCodeId,
 	}
+}
+
+func (r *Reservation) ApplyDiscount(appliedDiscountId types.Id, amount types.Price) {
+	r.AppliedDiscountCodeId = &appliedDiscountId
+	r.Price -= amount
 }
 
 func NewReservationFromDto(

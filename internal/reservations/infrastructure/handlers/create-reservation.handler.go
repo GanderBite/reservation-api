@@ -26,15 +26,19 @@ func (h *createReservationHandler) Handle(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&dto); err != nil {
 		response.Error(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	reservationId, err := h.createReservationUseCase.Execute(c.Request.Context(), &dto)
 	if err != nil {
 		if errors.Is(domain.ErrSeatsAlreadyReserved, err) {
 			response.Error(c, http.StatusConflict, err.Error())
+		} else if errors.Is(domain.ErrMissingSeats, err) {
+			response.Error(c, http.StatusBadRequest, err.Error())
 		}
 
 		response.Error(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 
 	response.Success(c, reservationId, 201)

@@ -28,11 +28,17 @@ func (repo *PostgresReservationsRepository) Insert(ctx context.Context, r *domai
 	defer tx.Rollback()
 
 	insertReservation := `
-		INSERT INTO reservations (status, price, created_at, expires_at)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO reservations (status, price, created_at, expires_at, applied_discount_code_id)
+		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id`
+	var appliedDiscountCode any
+	if r.AppliedDiscountCodeId != nil {
+		appliedDiscountCode = *r.AppliedDiscountCodeId
+	} else {
+		appliedDiscountCode = nil
+	}
 	var reservationId string
-	err = tx.QueryRowContext(ctx, insertReservation, r.Status, r.Price, r.CreatedAt, r.ExpiresAt).Scan(&reservationId)
+	err = tx.QueryRowContext(ctx, insertReservation, r.Status, r.Price, r.CreatedAt, r.ExpiresAt, appliedDiscountCode).Scan(&reservationId)
 	if err != nil {
 		return uuid.Nil, err
 	}
