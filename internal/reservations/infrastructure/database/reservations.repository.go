@@ -3,6 +3,9 @@ package database
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"strings"
+	"time"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/reservations/domain"
@@ -55,6 +58,51 @@ func (repo *PostgresReservationsRepository) Insert(ctx context.Context, r *domai
 	}
 
 	return parsedId, nil
+}
+
+func (repo *PostgresReservationsRepository) GetReservedSeatsByIds(ctx context.Context, ids []*types.Id) ([]*domain.ReservedSeat, error) {
+	if len(ids) == 0 {
+		return []*domain.ReservedSeat{}, nil
+	}
+
+	placeholders := make([]string, len(ids))
+	args := make([]any, len(ids))
+	for i, id := range ids {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+
+	query := fmt.Sprintf(`
+		SELECT id, reservation_id, seat_id, created_at
+		FROM reserved_seats
+		WHERE seat_id IN (%s)`, strings.Join(placeholders, ", "))
+
+	rows, err := repo.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var rsArr []*domain.ReservedSeat
+	for rows.Next() {
+		var id types.Id
+		var reservationId types.Id
+		var seatId types.Id
+		var createdAt time.Time
+
+		if err := rows.Scan(&id, &reservationId, &seatId, &createdAt); err != nil {
+			return nil, err
+		}
+
+		rs := domain.NewReservedSeat(id, reservationId, seatId, createdAt)
+		rsArr = append(rsArr, rs)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return rsArr, nil
 }
 
 func (repo *PostgresReservationsRepository) GetById(ctx context.Context, id types.Id) *domain.Reservation {

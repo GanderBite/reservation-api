@@ -29,7 +29,14 @@ func (uc *CreateReservationUseCase) Execute(ctx context.Context, dto *dtos.Creat
 		return uuid.Nil, err
 	}
 
-	// TODO: Validate if seats are reserved
+	reservedSeats, err := uc.reservationRepository.GetReservedSeatsByIds(ctx, dto.SeatIds)
+	if err != nil {
+		return uuid.Nil, err
+	}
+
+	if len(reservedSeats) > 0 {
+		return uuid.Nil, domain.ErrSeatsAlreadyReserved
+	}
 
 	var totalPrice types.Price = 0.0
 	for _, seat := range seats {
