@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/reservations/domain"
@@ -12,4 +13,6 @@ type ReservationsRepository interface {
 	GetById(ctx context.Context, id types.Id) (*domain.Reservation, error)
 	GetReservedSeatsByIds(ctx context.Context, ids []*types.Id) ([]*domain.ReservedSeat, error)
 	UpdateStatus(ctx context.Context, reservationId types.Id, status domain.ReservationStatus) error
+	DeletePending(ctx context.Context, cutoff time.Time) error
+	DeleteExpired(ctx context.Context) error
 }

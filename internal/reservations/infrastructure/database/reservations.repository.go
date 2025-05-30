@@ -158,12 +158,40 @@ func (repo *PostgresReservationsRepository) GetById(ctx context.Context, id type
 }
 
 func (repo *PostgresReservationsRepository) UpdateStatus(ctx context.Context, reservationId types.Id, status domain.ReservationStatus) error {
-	query := `
+
+	confirmQuery := `
 			UPDATE reservations
 			SET status = $1
 			WHERE id = $2
 		`
-	_, err := repo.db.ExecContext(ctx, query, status, reservationId)
+	deleteQuery := `
+		DELETE FROM reservations
+		WHERE id = $1;
+	`
 
+	var err error
+	switch status {
+	case domain.StatusExpired:
+		_, err = repo.db.ExecContext(ctx, deleteQuery, reservationId)
+	default:
+		_, err = repo.db.ExecContext(ctx, confirmQuery, status, reservationId)
+	}
+
+	return err
+}
+
+func (repo *PostgresReservationsRepository) DeletePending(ctx context.Context, cutoff time.Time) error {
+	_, err := repo.db.ExecContext(ctx, `
+		DELETE FROM reservations
+		WHERE status = 'pending' AND created_at < $1
+	`, cutoff)
+	return err
+}
+
+func (repo *PostgresReservationsRepository) DeleteExpired(ctx context.Context) error {
+	_, err := repo.db.ExecContext(ctx, `
+		DELETE FROM reservations
+		WHERE status = 'expired' OR expires_at <= NOW()
+	`)
 	return err
 }

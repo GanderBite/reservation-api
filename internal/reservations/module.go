@@ -11,7 +11,7 @@ import (
 )
 
 type ReservationsModule struct {
-	repo     repository.ReservationsRepository
+	Repo     repository.ReservationsRepository
 	Handlers *handlers.ReservationHandlers
 }
 
