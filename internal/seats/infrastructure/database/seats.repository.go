@@ -86,3 +86,35 @@ func (repo *PostgresSeatsRepository) GetByIds(ctx context.Context, ids []*types.
 
 	return seats, nil
 }
+
+func (repo *PostgresSeatsRepository) GetAll(ctx context.Context) ([]*entities.Seat, error) {
+
+	query := "SELECT id, row, col, price FROM seats ORDER BY row, col"
+
+	rows, err := repo.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var seats []*entities.Seat
+	for rows.Next() {
+		var id uuid.UUID
+		var row string
+		var col int
+		var price types.Price
+
+		if err := rows.Scan(&id, &row, &col, &price); err != nil {
+			return nil, err
+		}
+
+		seat := entities.NewSeat(id, row, col, price)
+		seats = append(seats, seat)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return seats, nil
+}

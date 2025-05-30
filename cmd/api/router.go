@@ -20,6 +20,7 @@ func (app *application) routes() http.Handler {
 
 		// Seats
 		v1.POST("/seats", app.seats.Handlers.CreateSeatHandler.Handle)
+		v1.GET("/seats", app.seats.Handlers.GetAllSeatsHandler)
 
 		// Reservations
 		v1.POST("/reservations", app.reservations.Handlers.CreateReservationHandler.Handle)
