@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
+	"github.com/GanderBite/reservation-api/internal/reservations/application/dtos"
 	"github.com/GanderBite/reservation-api/internal/reservations/domain"
 	"github.com/google/uuid"
 )
@@ -194,4 +195,101 @@ func (repo *PostgresReservationsRepository) DeleteExpired(ctx context.Context) e
 		WHERE status = 'expired' OR expires_at <= NOW()
 	`)
 	return err
+}
+
+func (repo *PostgresReservationsRepository) GetReservationDetails(ctx context.Context, reservationId types.Id) (*dtos.ReservationDto, error) {
+	query := `
+		SELECT
+			r.id,
+			r.status,
+			r.price,
+			r.created_at,
+			r.expires_at,
+			s.id AS seat_id,
+			s.row,
+			s.col,
+			s.price
+		FROM reservations r
+		JOIN reserved_seats rs ON rs.reservation_id = r.id
+		JOIN seats s ON s.id = rs.seat_id
+		WHERE r.id = $1;
+	`
+
+	rows, err := repo.db.QueryContext(ctx, query, reservationId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		resDto *dtos.ReservationDto
+		seats  []*dtos.SeatDto
+	)
+
+	for rows.Next() {
+		var (
+			id        uuid.UUID
+			status    string
+			price     types.Price
+			createdAt time.Time
+			expiresAt time.Time
+
+			seatId    uuid.UUID
+			row       string
+			col       int
+			seatPrice types.Price
+		)
+
+		err := rows.Scan(&id, &status, &price, &createdAt, &expiresAt, &seatId, &row, &col, &seatPrice)
+		if err != nil {
+			return nil, err
+		}
+
+		// Only initialize once
+		if resDto == nil {
+			resDto = &dtos.ReservationDto{
+				ID:        id,
+				Status:    domain.ReservationStatus(status),
+				Price:     price,
+				CreatedAt: createdAt,
+				ExpiresAt: expiresAt,
+			}
+		}
+
+		seats = append(seats, &dtos.SeatDto{
+			ID:    seatId,
+			Label: fmt.Sprintf("%s%d", row, col),
+		})
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	if resDto == nil {
+		return nil, domain.ErrReservationNotFound
+	}
+
+	resDto.Seats = seats
+	return resDto, nil
+}
+
+func (repo *PostgresReservationsRepository) IsSeatReserved(ctx context.Context, seatId types.Id) (bool, error) {
+	query := `
+		SELECT EXISTS (
+			SELECT 1
+			FROM reserved_seats rs
+			JOIN reservations r ON rs.reservation_id = r.id
+			WHERE rs.seat_id = $1
+			AND r.status != 'expired'
+		);
+	`
+
+	var exists bool
+	err := repo.db.QueryRowContext(ctx, query, seatId).Scan(&exists)
+	if err != nil {
+		return false, err
+	}
+
+	return exists, nil
 }

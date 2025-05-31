@@ -19,14 +19,15 @@ func (app *application) routes() http.Handler {
 		v1.GET("/discount-codes", app.discountCodes.Handlers.GetAllCodes)
 
 		// Seats
-		v1.POST("/seats", app.seats.Handlers.CreateSeatHandler.Handle)
 		v1.GET("/seats", app.seats.Handlers.GetAllSeatsHandler)
+		v1.POST("/seats", app.seats.Handlers.CreateSeatHandler.Handle)
 
 		// Reservations
+		v1.GET("/reservations/:id", app.reservations.Handlers.GetReservationDetails)
+		v1.GET("/reservations/is-seat-reserved/:id", app.reservations.Handlers.IsSeatReserved)
 		v1.POST("/reservations", app.reservations.Handlers.CreateReservationHandler.Handle)
 		v1.POST("/reservations/confirm", app.reservations.Handlers.ConfirmReservationHandler.Handle)
 		v1.POST("/reservations/cancel", app.reservations.Handlers.CancelReservationHandler.Handle)
-
 	}
 
 	return g
