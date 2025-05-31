@@ -7,15 +7,18 @@ import (
 )
 
 type SuccessResponse[T any] struct {
-	Code   int    `json:"code"`
 	Status string `json:"status"`
 	Data   T      `json:"data"`
 }
 
 type ErrorResponse struct {
-	Code    int    `json:"code"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	Status  string `json:"status" example:"error"`
+	Message string `json:"message" example:"error message"`
+}
+
+type BoolResponse struct {
+	Status string `json:"status" example:"success"`
+	Data   bool   `json:"data" example:"true"`
 }
 
 func Success[T any](c *gin.Context, data T, statusCode ...int) {
@@ -27,13 +30,11 @@ func Success[T any](c *gin.Context, data T, statusCode ...int) {
 	c.JSON(code, SuccessResponse[T]{
 		Status: "success",
 		Data:   data,
-		Code:   code,
 	})
 }
 
 func Error(c *gin.Context, statusCode int, message string) {
 	c.JSON(statusCode, ErrorResponse{
-		Code:    statusCode,
 		Status:  "error",
 		Message: message,
 	})

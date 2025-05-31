@@ -21,6 +21,18 @@ func newCreateReservationHandler(createReservationUC *usecases.CreateReservation
 	}
 }
 
+// CreateReservation godoc
+// @Summary Create a new reservation
+// @Description Creates a new reservation with selected seat IDs
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Param input body dtos.CreateReservationDto true "Reservation Input"
+// @Success 201 {object} dtos.CreateReservationResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 409 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /reservations [post]
 func (h *createReservationHandler) Handle(c *gin.Context) {
 	var dto dtos.CreateReservationDto
 

@@ -21,6 +21,19 @@ func newCancelReservationHandler(updateReservationStatus *usecases.UpdateReserva
 	}
 }
 
+// CancelReservation godoc
+// @Summary Cancel existing reservation
+// @Description Cancel given reservation
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Param input body dtos.CancelReservationStatusDto true "Reservation Id to cancel"
+// @Success 200 {object} response.BoolResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 404 {object} response.ErrorResponse
+// @Failure 409 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /reservations/cancel [post]
 func (h *cancelReservationHandler) Handle(c *gin.Context) {
 	var dto dtos.CancelReservationStatusDto
 

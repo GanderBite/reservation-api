@@ -7,10 +7,10 @@ import (
 )
 
 type DiscountCode struct {
-	ID        types.Id    `json:"id"`
-	Code      string      `json:"code"`
+	ID        types.Id    `json:"id" example:"discount-code-uuid"`
+	Code      string      `json:"code" example:"BIG_FAM"`
 	CreatedAt time.Time   `json:"createdAt"`
-	Price     types.Price `json:"price"`
+	Price     types.Price `json:"price" example:"10"`
 }
 
 func NewDiscountCode(id types.Id, code string, createdAt time.Time, price types.Price) *DiscountCode {

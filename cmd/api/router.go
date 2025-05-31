@@ -3,7 +3,10 @@ package main
 import (
 	"net/http"
 
+	_ "github.com/GanderBite/reservation-api/docs"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func (app *application) routes() http.Handler {
@@ -14,6 +17,8 @@ func (app *application) routes() http.Handler {
 		v1.GET("/health", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": "healthy"})
 		})
+
+		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 		// Discount codes
 		v1.GET("/discount-codes", app.discountCodes.Handlers.GetAllCodes)

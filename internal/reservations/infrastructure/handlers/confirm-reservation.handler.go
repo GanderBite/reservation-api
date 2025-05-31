@@ -21,6 +21,19 @@ func newConfirmReservationHandler(updateReservationStatus *usecases.UpdateReserv
 	}
 }
 
+// ConfirmReservation godoc
+// @Summary Confirm existing reservation
+// @Description Confirm given reservation
+// @Tags reservations
+// @Accept json
+// @Produce json
+// @Param input body dtos.ConfirmReservationStatusDto true "Reservation Id to confirm"
+// @Success 200 {object} response.BoolResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 404 {object} response.ErrorResponse
+// @Failure 409 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /reservations/confirm [post]
 func (h *confirmReservationHandler) Handle(c *gin.Context) {
 	var dto dtos.ConfirmReservationStatusDto
 

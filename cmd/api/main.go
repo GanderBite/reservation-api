@@ -13,6 +13,11 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// @title       Reservation API
+// @version     1.0
+// @description API for managing reservations
+// @BasePath    /api/v1
+
 type application struct {
 	port          int
 	seats         *seats.SeatsModule

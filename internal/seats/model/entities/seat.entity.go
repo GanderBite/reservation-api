@@ -5,10 +5,10 @@ import (
 )
 
 type Seat struct {
-	ID    types.Id    `json:"id"`
-	Row   string      `json:"row"`
-	Col   int         `json:"col"`
-	Price types.Price `json:"price"`
+	ID    types.Id    `json:"id" example:"seat-uuid"`
+	Row   string      `json:"row" example:"A"`
+	Col   int         `json:"col" example:"1"`
+	Price types.Price `json:"price" example:"15"`
 }
 
 func NewSeat(id types.Id, row string, col int, price types.Price) *Seat {

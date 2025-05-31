@@ -1,0 +1,438 @@
+basePath: /api/v1
+definitions:
+  domain.ReservationStatus:
+    enum:
+    - pending
+    - confirmed
+    - expired
+    type: string
+    x-enum-varnames:
+    - StatusPending
+    - StatusConfirmed
+    - StatusExpired
+  dtos.CancelReservationStatusDto:
+    properties:
+      reservationId:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    required:
+    - reservationId
+    type: object
+  dtos.ConfirmReservationStatusDto:
+    properties:
+      reservationId:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    required:
+    - reservationId
+    type: object
+  dtos.CreateReservationDto:
+    properties:
+      seatIds:
+        items:
+          type: string
+        minItems: 1
+        type: array
+    required:
+    - seatIds
+    type: object
+  dtos.CreateReservationResponse:
+    properties:
+      code:
+        example: 201
+        type: integer
+      data:
+        example: created-reservation-uuid
+        type: string
+      status:
+        example: success
+        type: string
+    type: object
+  dtos.CreateSeatDto:
+    properties:
+      col:
+        minimum: 1
+        type: integer
+      price:
+        minimum: 1
+        type: number
+      row:
+        maxLength: 1
+        type: string
+    required:
+    - col
+    - price
+    - row
+    type: object
+  dtos.CreateSeatResponse:
+    properties:
+      code:
+        example: 201
+        type: integer
+      data:
+        example: created-seat-uuid
+        type: string
+      status:
+        example: success
+        type: string
+    type: object
+  dtos.GetAllDiscountCodesResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.DiscountCode'
+        type: array
+      status:
+        example: success
+        type: string
+    type: object
+  dtos.GetAllSeatsResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.Seat'
+        type: array
+      status:
+        example: success
+        type: string
+    type: object
+  dtos.ReservationDto:
+    properties:
+      createdAt:
+        type: string
+      expiresAt:
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      price:
+        example: 35
+        type: number
+      seats:
+        items:
+          $ref: '#/definitions/dtos.SeatDto'
+        type: array
+      status:
+        allOf:
+        - $ref: '#/definitions/domain.ReservationStatus'
+        example: confirmed
+    type: object
+  dtos.ReservationSuccessResponse:
+    properties:
+      code:
+        example: 200
+        type: integer
+      data:
+        $ref: '#/definitions/dtos.ReservationDto'
+      status:
+        example: success
+        type: string
+    type: object
+  dtos.SeatDto:
+    properties:
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      label:
+        example: A1
+        type: string
+    type: object
+  entities.DiscountCode:
+    properties:
+      code:
+        example: BIG_FAM
+        type: string
+      createdAt:
+        type: string
+      id:
+        example: discount-code-uuid
+        type: string
+      price:
+        example: 10
+        type: number
+    type: object
+  entities.Seat:
+    properties:
+      col:
+        example: 1
+        type: integer
+      id:
+        example: seat-uuid
+        type: string
+      price:
+        example: 15
+        type: number
+      row:
+        example: A
+        type: string
+    type: object
+  response.BoolResponse:
+    properties:
+      data:
+        example: true
+        type: boolean
+      status:
+        example: success
+        type: string
+    type: object
+  response.ErrorResponse:
+    properties:
+      message:
+        example: error message
+        type: string
+      status:
+        example: error
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API for managing reservations
+  title: Reservation API
+  version: "1.0"
+paths:
+  /discount-codes:
+    get:
+      description: Get all discount codes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.GetAllDiscountCodesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Gets all discount codes
+      tags:
+      - discount-codes
+  /reservations:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new reservation with selected seat IDs
+      parameters:
+      - description: Reservation Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateReservationDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.CreateReservationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Create a new reservation
+      tags:
+      - reservations
+  /reservations/{id}:
+    get:
+      description: Returns reservation information and associated seats
+      parameters:
+      - description: Reservation ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.ReservationSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Get reservation details
+      tags:
+      - reservations
+  /reservations/cancel:
+    post:
+      consumes:
+      - application/json
+      description: Cancel given reservation
+      parameters:
+      - description: Reservation Id to cancel
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CancelReservationStatusDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BoolResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Cancel existing reservation
+      tags:
+      - reservations
+  /reservations/confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirm given reservation
+      parameters:
+      - description: Reservation Id to confirm
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.ConfirmReservationStatusDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BoolResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Confirm existing reservation
+      tags:
+      - reservations
+  /reservations/is-seat-reserved:
+    get:
+      description: Checks if given seat is reserved
+      parameters:
+      - description: Seat ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.BoolResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Checks if given seat is reserved
+      tags:
+      - reservations
+  /seats:
+    get:
+      description: Get all seats
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.GetAllSeatsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Gets all seats
+      tags:
+      - seats
+    post:
+      consumes:
+      - application/json
+      description: Creates a new seat
+      parameters:
+      - description: Seat Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateSeatDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.CreateSeatResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Creates a new seat
+      tags:
+      - seats
+swagger: "2.0"

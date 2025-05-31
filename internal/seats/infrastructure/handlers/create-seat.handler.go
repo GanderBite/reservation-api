@@ -19,6 +19,17 @@ func newCreateSeatHandler(createSeatUC *usecase.CreateSeatUseCase) *createSeatHa
 	}
 }
 
+// CreateSeat godoc
+// @Summary Creates a new seat
+// @Description Creates a new seat
+// @Tags seats
+// @Accept json
+// @Produce json
+// @Param input body dtos.CreateSeatDto true "Seat Input"
+// @Success 201 {object} dtos.CreateSeatResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /seats [post]
 func (h *createSeatHandler) Handle(c *gin.Context) {
 	var dto dtos.CreateSeatDto
 

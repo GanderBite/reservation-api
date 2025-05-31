@@ -9,6 +9,17 @@ import (
 	"github.com/google/uuid"
 )
 
+// GetReservationDetails godoc
+// @Summary Get reservation details
+// @Description Returns reservation information and associated seats
+// @Tags reservations
+// @Produce json
+// @Param id path string true "Reservation ID"
+// @Success 200 {object} dtos.ReservationSuccessResponse
+// @Failure 400 {object} response.ErrorResponse
+// @Failure 404 {object} response.ErrorResponse
+// @Failure 500 {object} response.ErrorResponse
+// @Router /reservations/{id} [get]
 func (h *ReservationHandlers) GetReservationDetails(c *gin.Context) {
 	id := c.Param("id")
 
