@@ -4,18 +4,21 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	response "github.com/GanderBite/reservation-api/internal/pkg"
 	"github.com/GanderBite/reservation-api/internal/reservations/application/dtos"
 	usecases "github.com/GanderBite/reservation-api/internal/reservations/application/use-cases"
 	"github.com/GanderBite/reservation-api/internal/reservations/domain"
-	"github.com/gin-gonic/gin"
 )
 
 type cancelReservationHandler struct {
 	updateReservationStatus *usecases.UpdateReservationStatusUseCase
 }
 
-func newCancelReservationHandler(updateReservationStatus *usecases.UpdateReservationStatusUseCase) *cancelReservationHandler {
+func newCancelReservationHandler(
+	updateReservationStatus *usecases.UpdateReservationStatusUseCase,
+) *cancelReservationHandler {
 	return &cancelReservationHandler{
 		updateReservationStatus: updateReservationStatus,
 	}
@@ -44,11 +47,11 @@ func (h *cancelReservationHandler) Handle(c *gin.Context) {
 
 	err := h.updateReservationStatus.Execute(c.Request.Context(), dto.ReservationId, domain.StatusExpired)
 	if err != nil {
-		if errors.Is(domain.ErrReservationNotFound, err) {
+		if errors.Is(err, domain.ErrReservationNotFound) {
 			response.Error(c, http.StatusNotFound, err.Error())
-		} else if errors.Is(domain.ErrReservationAlreadyExpired, err) {
+		} else if errors.Is(err, domain.ErrReservationAlreadyExpired) {
 			response.Error(c, http.StatusBadRequest, err.Error())
-		} else if errors.Is(domain.ErrReservationStatusAlreadyApplied, err) {
+		} else if errors.Is(err, domain.ErrReservationStatusAlreadyApplied) {
 			response.Error(c, http.StatusConflict, err.Error())
 		} else {
 			response.Error(c, http.StatusInternalServerError, err.Error())

@@ -3,10 +3,11 @@ package main
 import (
 	"net/http"
 
-	_ "github.com/GanderBite/reservation-api/docs"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/GanderBite/reservation-api/docs"
 )
 
 func (app *application) routes() http.Handler {

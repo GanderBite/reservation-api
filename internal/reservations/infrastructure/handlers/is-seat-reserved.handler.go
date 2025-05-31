@@ -3,9 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	response "github.com/GanderBite/reservation-api/internal/pkg"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	response "github.com/GanderBite/reservation-api/internal/pkg"
 )
 
 // IsSeatReserved godoc

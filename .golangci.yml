@@ -1,0 +1,12 @@
+version: "2"
+
+formatters:
+  enable:
+    - goimports
+    - golines
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/GanderBite/reservation-api
+    golines:
+      max-len: 120

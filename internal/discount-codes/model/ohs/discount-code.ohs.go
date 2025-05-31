@@ -1,8 +1,9 @@
 package ohs
 
 import (
-	"github.com/GanderBite/reservation-api/internal/discount-codes/model/entities"
 	"golang.org/x/net/context"
+
+	"github.com/GanderBite/reservation-api/internal/discount-codes/model/entities"
 )
 
 type DiscountCodeOhs interface {

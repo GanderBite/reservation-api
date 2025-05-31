@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/GanderBite/reservation-api/internal/pkg/env"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v5/stdlib"
+
+	"github.com/GanderBite/reservation-api/internal/pkg/env"
 )
 
 func RunMigrations(direction string) {
@@ -16,8 +17,11 @@ func RunMigrations(direction string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer db.Close()
+	defer func() {
+		if cerr := db.Close(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	instance, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {

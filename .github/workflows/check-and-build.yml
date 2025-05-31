@@ -1,4 +1,4 @@
-name: Run Tests
+name: Check & Build
 
 on:
   push:
@@ -21,6 +21,18 @@ jobs:
 
       - name: Download dependencies
         run: go mod download
+
+      - name: Install golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v2.1.6
+          args: --timeout=5m
+
+      - name: Run golangci-lint
+        run: golangci-lint run --out-format=colored-line-number
+
+      - name: Build the application
+        run: go build ./...
 
       - name: Run tests
         run: go test ./... -v

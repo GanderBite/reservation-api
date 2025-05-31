@@ -5,9 +5,9 @@ import (
 )
 
 type Seat struct {
-	ID    types.Id    `json:"id" example:"seat-uuid"`
-	Row   string      `json:"row" example:"A"`
-	Col   int         `json:"col" example:"1"`
+	ID    types.Id    `json:"id"    example:"seat-uuid"`
+	Row   string      `json:"row"   example:"A"`
+	Col   int         `json:"col"   example:"1"`
 	Price types.Price `json:"price" example:"15"`
 }
 

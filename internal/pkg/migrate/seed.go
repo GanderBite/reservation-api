@@ -5,11 +5,12 @@ import (
 	"log"
 	"time"
 
+	"github.com/google/uuid"
+	_ "github.com/jackc/pgx/v5/stdlib"
+
 	"github.com/GanderBite/reservation-api/internal/discount-codes/model/entities"
 	"github.com/GanderBite/reservation-api/internal/pkg/env"
 	seatEntities "github.com/GanderBite/reservation-api/internal/seats/model/entities"
-	"github.com/google/uuid"
-	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 func getSeedSeats() []*seatEntities.Seat {
@@ -39,7 +40,11 @@ func Seed() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer func() {
+		if cerr := db.Close(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	seats := getSeedSeats()
 
@@ -53,7 +58,11 @@ func Seed() {
 	if err != nil {
 		log.Fatalf("Failed to begin transaction: %v", err)
 	}
-	defer tx.Rollback()
+	defer func() {
+		if cerr := tx.Rollback(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	for _, s := range seats {
 		_, err := tx.Exec(seatsQuery,

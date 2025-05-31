@@ -7,7 +7,7 @@ type CreateReservationDto struct {
 }
 
 type CreateReservationResponse struct {
-	Code   int      `json:"code" example:"201"`
+	Code   int      `json:"code"   example:"201"`
 	Status string   `json:"status" example:"success"`
-	Data   types.Id `json:"data" example:"created-reservation-uuid"`
+	Data   types.Id `json:"data"   example:"created-reservation-uuid"`
 }

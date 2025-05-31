@@ -4,11 +4,12 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	response "github.com/GanderBite/reservation-api/internal/pkg"
 	"github.com/GanderBite/reservation-api/internal/reservations/application/dtos"
 	usecases "github.com/GanderBite/reservation-api/internal/reservations/application/use-cases"
 	"github.com/GanderBite/reservation-api/internal/reservations/domain"
-	"github.com/gin-gonic/gin"
 )
 
 type createReservationHandler struct {
@@ -43,9 +44,9 @@ func (h *createReservationHandler) Handle(c *gin.Context) {
 
 	reservationId, err := h.createReservationUseCase.Execute(c.Request.Context(), &dto)
 	if err != nil {
-		if errors.Is(domain.ErrSeatsAlreadyReserved, err) {
+		if errors.Is(err, domain.ErrSeatsAlreadyReserved) {
 			response.Error(c, http.StatusConflict, err.Error())
-		} else if errors.Is(domain.ErrMissingSeats, err) {
+		} else if errors.Is(err, domain.ErrMissingSeats) {
 			response.Error(c, http.StatusBadRequest, err.Error())
 		} else {
 			response.Error(c, http.StatusInternalServerError, err.Error())

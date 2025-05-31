@@ -15,7 +15,11 @@ type ReservationsModule struct {
 	Handlers *handlers.ReservationHandlers
 }
 
-func NewReservationsModule(db *sql.DB, seatsApi ohs.SeatsOHS, discountCodesOhs discountCodesOhs.DiscountCodeOhs) *ReservationsModule {
+func NewReservationsModule(
+	db *sql.DB,
+	seatsApi ohs.SeatsOHS,
+	discountCodesOhs discountCodesOhs.DiscountCodeOhs,
+) *ReservationsModule {
 	repo := database.NewPostgresReservationsRepository(db)
 	handlers := handlers.NewReservationHandlers(repo, seatsApi, discountCodesOhs)
 

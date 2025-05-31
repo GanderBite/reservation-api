@@ -4,10 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/GanderBite/reservation-api/internal/pkg/types"
-	"github.com/GanderBite/reservation-api/internal/reservations/domain"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/GanderBite/reservation-api/internal/pkg/types"
+	"github.com/GanderBite/reservation-api/internal/reservations/domain"
 )
 
 func TestNewReservationFromDto(t *testing.T) {

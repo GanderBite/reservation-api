@@ -4,13 +4,14 @@ import (
 	"database/sql"
 	"log"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/robfig/cron/v3"
+
 	discount_code "github.com/GanderBite/reservation-api/internal/discount-codes"
 	"github.com/GanderBite/reservation-api/internal/pkg/env"
 	"github.com/GanderBite/reservation-api/internal/pkg/services"
 	"github.com/GanderBite/reservation-api/internal/reservations"
 	"github.com/GanderBite/reservation-api/internal/seats"
-	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/robfig/cron/v3"
 )
 
 // @title       Reservation API

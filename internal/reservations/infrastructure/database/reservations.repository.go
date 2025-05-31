@@ -5,13 +5,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/reservations/application/dtos"
 	"github.com/GanderBite/reservation-api/internal/reservations/domain"
-	"github.com/google/uuid"
 )
 
 type PostgresReservationsRepository struct {
@@ -22,12 +24,20 @@ func NewPostgresReservationsRepository(db *sql.DB) *PostgresReservationsReposito
 	return &PostgresReservationsRepository{db}
 }
 
-func (repo *PostgresReservationsRepository) Insert(ctx context.Context, r *domain.Reservation, seatIds []*types.Id) (types.Id, error) {
+func (repo *PostgresReservationsRepository) Insert(
+	ctx context.Context,
+	r *domain.Reservation,
+	seatIds []*types.Id,
+) (types.Id, error) {
 	tx, err := repo.db.BeginTx(ctx, nil)
 	if err != nil {
 		return uuid.Nil, err
 	}
-	defer tx.Rollback()
+	defer func() {
+		if cerr := tx.Rollback(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	insertReservation := `
 		INSERT INTO reservations (status, price, created_at, expires_at, applied_discount_code_id)
@@ -40,7 +50,8 @@ func (repo *PostgresReservationsRepository) Insert(ctx context.Context, r *domai
 		appliedDiscountCode = nil
 	}
 	var reservationId string
-	err = tx.QueryRowContext(ctx, insertReservation, r.Status, r.Price, r.CreatedAt, r.ExpiresAt, appliedDiscountCode).Scan(&reservationId)
+	err = tx.QueryRowContext(ctx, insertReservation, r.Status, r.Price, r.CreatedAt, r.ExpiresAt, appliedDiscountCode).
+		Scan(&reservationId)
 	if err != nil {
 		return uuid.Nil, err
 	}
@@ -68,7 +79,10 @@ func (repo *PostgresReservationsRepository) Insert(ctx context.Context, r *domai
 	return parsedId, nil
 }
 
-func (repo *PostgresReservationsRepository) GetReservedSeatsByIds(ctx context.Context, ids []*types.Id) ([]*domain.ReservedSeat, error) {
+func (repo *PostgresReservationsRepository) GetReservedSeatsByIds(
+	ctx context.Context,
+	ids []*types.Id,
+) ([]*domain.ReservedSeat, error) {
 	if len(ids) == 0 {
 		return []*domain.ReservedSeat{}, nil
 	}
@@ -89,7 +103,11 @@ func (repo *PostgresReservationsRepository) GetReservedSeatsByIds(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if cerr := rows.Close(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	var rsArr []*domain.ReservedSeat
 	for rows.Next() {
@@ -158,7 +176,11 @@ func (repo *PostgresReservationsRepository) GetById(ctx context.Context, id type
 	return res, nil
 }
 
-func (repo *PostgresReservationsRepository) UpdateStatus(ctx context.Context, reservationId types.Id, status domain.ReservationStatus) error {
+func (repo *PostgresReservationsRepository) UpdateStatus(
+	ctx context.Context,
+	reservationId types.Id,
+	status domain.ReservationStatus,
+) error {
 
 	confirmQuery := `
 			UPDATE reservations
@@ -197,7 +219,10 @@ func (repo *PostgresReservationsRepository) DeleteExpired(ctx context.Context) e
 	return err
 }
 
-func (repo *PostgresReservationsRepository) GetReservationDetails(ctx context.Context, reservationId types.Id) (*dtos.ReservationDto, error) {
+func (repo *PostgresReservationsRepository) GetReservationDetails(
+	ctx context.Context,
+	reservationId types.Id,
+) (*dtos.ReservationDto, error) {
 	query := `
 		SELECT
 			r.id,
@@ -219,7 +244,11 @@ func (repo *PostgresReservationsRepository) GetReservationDetails(ctx context.Co
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if cerr := rows.Close(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	var (
 		resDto *dtos.ReservationDto

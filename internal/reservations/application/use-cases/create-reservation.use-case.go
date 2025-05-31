@@ -3,6 +3,8 @@ package usecases
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	discountCodesOhs "github.com/GanderBite/reservation-api/internal/discount-codes/model/ohs"
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/reservations/application/dtos"
@@ -10,7 +12,6 @@ import (
 	"github.com/GanderBite/reservation-api/internal/reservations/application/services"
 	"github.com/GanderBite/reservation-api/internal/reservations/domain"
 	"github.com/GanderBite/reservation-api/internal/seats/model/ohs"
-	"github.com/google/uuid"
 )
 
 type CreateReservationUseCase struct {

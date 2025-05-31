@@ -4,11 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"strings"
+
+	"github.com/google/uuid"
 
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
 	"github.com/GanderBite/reservation-api/internal/seats/model/entities"
-	"github.com/google/uuid"
 )
 
 type PostgresSeatsRepository struct {
@@ -63,7 +65,11 @@ func (repo *PostgresSeatsRepository) GetByIds(ctx context.Context, ids []*types.
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if cerr := rows.Close(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	var seats []*entities.Seat
 	for rows.Next() {
@@ -95,7 +101,11 @@ func (repo *PostgresSeatsRepository) GetAll(ctx context.Context) ([]*entities.Se
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if cerr := rows.Close(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	var seats []*entities.Seat
 	for rows.Next() {

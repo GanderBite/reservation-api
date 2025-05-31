@@ -3,11 +3,13 @@ package database
 import (
 	"context"
 	"database/sql"
+	"log"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/GanderBite/reservation-api/internal/discount-codes/model/entities"
 	"github.com/GanderBite/reservation-api/internal/pkg/types"
-	"github.com/google/uuid"
 )
 
 type PostgresDiscountCodesRepository struct {
@@ -18,7 +20,10 @@ func NewPostgressDiscountCodesRepository(db *sql.DB) *PostgresDiscountCodesRepos
 	return &PostgresDiscountCodesRepository{db}
 }
 
-func (repo *PostgresDiscountCodesRepository) GetByCode(ctx context.Context, code string) (*entities.DiscountCode, error) {
+func (repo *PostgresDiscountCodesRepository) GetByCode(
+	ctx context.Context,
+	code string,
+) (*entities.DiscountCode, error) {
 	query := `SELECT id, code, price, created_at FROM discount_codes WHERE code = $1`
 
 	row := repo.db.QueryRowContext(ctx, query, code)
@@ -43,7 +48,11 @@ func (repo *PostgresDiscountCodesRepository) GetAll(ctx context.Context) ([]*ent
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func() {
+		if cerr := rows.Close(); cerr != nil {
+			log.Fatalln(cerr.Error())
+		}
+	}()
 
 	var discountCodes []*entities.DiscountCode
 

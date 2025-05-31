@@ -20,7 +20,11 @@ func NewUpdateReservationStatusUseCase(
 	}
 }
 
-func (uc *UpdateReservationStatusUseCase) Execute(ctx context.Context, reservationId types.Id, status domain.ReservationStatus) error {
+func (uc *UpdateReservationStatusUseCase) Execute(
+	ctx context.Context,
+	reservationId types.Id,
+	status domain.ReservationStatus,
+) error {
 	reservation, err := uc.repo.GetById(ctx, reservationId)
 	if err != nil {
 		return err

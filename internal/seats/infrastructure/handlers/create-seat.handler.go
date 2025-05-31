@@ -3,10 +3,11 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	response "github.com/GanderBite/reservation-api/internal/pkg"
 	"github.com/GanderBite/reservation-api/internal/seats/model/dtos"
 	usecase "github.com/GanderBite/reservation-api/internal/seats/model/use-cases"
-	"github.com/gin-gonic/gin"
 )
 
 type createSeatHandler struct {

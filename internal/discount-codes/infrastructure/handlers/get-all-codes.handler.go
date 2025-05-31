@@ -3,8 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	response "github.com/GanderBite/reservation-api/internal/pkg"
 	"github.com/gin-gonic/gin"
+
+	response "github.com/GanderBite/reservation-api/internal/pkg"
 )
 
 // GetAllDiscountCodes godoc

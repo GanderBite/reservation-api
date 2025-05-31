@@ -3,10 +3,11 @@ package handlers
 import (
 	"net/http"
 
-	response "github.com/GanderBite/reservation-api/internal/pkg"
-	"github.com/GanderBite/reservation-api/internal/reservations/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+
+	response "github.com/GanderBite/reservation-api/internal/pkg"
+	"github.com/GanderBite/reservation-api/internal/reservations/domain"
 )
 
 // GetReservationDetails godoc

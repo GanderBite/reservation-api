@@ -12,13 +12,13 @@ type SuccessResponse[T any] struct {
 }
 
 type ErrorResponse struct {
-	Status  string `json:"status" example:"error"`
+	Status  string `json:"status"  example:"error"`
 	Message string `json:"message" example:"error message"`
 }
 
 type BoolResponse struct {
 	Status string `json:"status" example:"success"`
-	Data   bool   `json:"data" example:"true"`
+	Data   bool   `json:"data"   example:"true"`
 }
 
 func Success[T any](c *gin.Context, data T, statusCode ...int) {
