@@ -72,7 +72,7 @@ func Seed() {
 	discountCodesQuery := `
 		INSERT INTO discount_codes (id, code, price, created_at)
 		VALUES ($1, $2, $3, $4)
-		ON CONFLICT (id) DO NOTHING
+		ON CONFLICT (code) DO NOTHING
 	`
 
 	for _, dc := range discountCodes {
