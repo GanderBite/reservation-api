@@ -143,6 +143,37 @@ definitions:
         example: A1
         type: string
     type: object
+  dtos.SignUpDto:
+    properties:
+      email:
+        example: joedoe@gmail.com
+        type: string
+      password:
+        example: S3cUrEP@55w0rd
+        maxLength: 64
+        minLength: 8
+        type: string
+      username:
+        example: coolusername123
+        minLength: 3
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  dtos.SignUpResponse:
+    properties:
+      code:
+        example: 201
+        type: integer
+      data:
+        example: jwt token
+        type: string
+      status:
+        example: success
+        type: string
+    type: object
   entities.DiscountCode:
     properties:
       code:
@@ -196,6 +227,40 @@ info:
   title: Reservation API
   version: "1.0"
 paths:
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Creates user and identity
+      parameters:
+      - description: Sign up input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.SignUpDto'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dtos.SignUpResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorResponse'
+      summary: Creates user and identity
+      tags:
+      - auth
   /discount-codes:
     get:
       description: Get all discount codes

@@ -21,6 +21,9 @@ func (app *application) routes() http.Handler {
 
 		v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+		// auth
+		v1.POST("/auth/sign-up", app.auth.Handlers.SignUpHandler.Handle)
+
 		// Discount codes
 		v1.GET("/discount-codes", app.discountCodes.Handlers.GetAllCodes)
 

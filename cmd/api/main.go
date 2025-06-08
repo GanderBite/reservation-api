@@ -7,6 +7,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/robfig/cron/v3"
 
+	"github.com/GanderBite/reservation-api/internal/auth"
 	discount_code "github.com/GanderBite/reservation-api/internal/discount-codes"
 	"github.com/GanderBite/reservation-api/internal/pkg/env"
 	"github.com/GanderBite/reservation-api/internal/pkg/services"
@@ -24,6 +25,7 @@ type application struct {
 	seats         *seats.SeatsModule
 	reservations  *reservations.ReservationsModule
 	discountCodes *discount_code.DiscountCodesModule
+	auth          *auth.AuthModule
 }
 
 func main() {
@@ -39,11 +41,14 @@ func main() {
 	seats := seats.NewSeatsModule(db)
 	discountCodes := discount_code.NewDiscountModule(db)
 	reservations := reservations.NewReservationsModule(db, seats.Api, discountCodes.Api)
+	auth := auth.NewAuthModule(db)
+
 	cleanUpService := services.NewCleanUpService(reservations.Repo)
 
 	app := &application{
 		port:          env.GetEnvInt("PORT"),
 		seats:         seats,
+		auth:          auth,
 		reservations:  reservations,
 		discountCodes: discountCodes,
 	}
